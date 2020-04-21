@@ -1,50 +1,30 @@
-import React, { useState, useContext } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Text, Input, Button } from "react-native-elements";
-import Spacer from "../components/Spacer";
+import React, { useContext } from "react";
+import { View, StyleSheet } from "react-native";
+import { NavigationEvents } from "react-navigation";
 import { Context as AuthContext } from "../context/authContext";
-import { navigate } from "../navigationRef";
+import AuthForm from "../components/AuthForm";
+import NavLink from "../components/NavLink";
 
-const SignUpScreen = ({ navigation }) => {
-	const { state, signup } = useContext(AuthContext);
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+const SignUpScreen = () => {
+	const { state, signup, clearErrorMessage } = useContext(AuthContext);
+
+	const onSubmit = ({ email, password }) => {
+		signup({ email, password });
+	};
+
 	return (
 		<View style={styles.container}>
-			<Spacer>
-				<Text h3>Sign Up for Tracker</Text>
-			</Spacer>
-			<Spacer />
-			<Input
-				label="Email"
-				autoCapitalize="none"
-				autoCorrect={false}
-				value={email}
-				onChangeText={setEmail}
+			<NavigationEvents onWillBlur={clearErrorMessage} />
+			<AuthForm
+				title="SignUp for tracker"
+				buttonTitle="SignUp"
+				onSubmit={onSubmit}
+				errorMessage={state.errorMessage}
 			/>
-			<Spacer />
-			<Input
-				secureTextEntry
-				label="Password"
-				autoCapitalize="none"
-				autoCorrect={false}
-				value={password}
-				onChangeText={setPassword}
+			<NavLink
+				text="Already have an account? Sign in instead."
+				routeName="SignIn"
 			/>
-			<Spacer />
-			{state.errorMessage ? (
-				<Text style={styles.errorMessage}>{state.errorMessage}</Text>
-			) : null}
-			<Spacer>
-				<Button title="SignUp" onPress={() => signup({ email, password })} />
-			</Spacer>
-			<TouchableOpacity onPress={() => navigation.navigate("Signin")}>
-				<Spacer>
-					<Text style={styles.link}>
-						Already have an account? Sign in instead.
-					</Text>
-				</Spacer>
-			</TouchableOpacity>
 		</View>
 	);
 };
@@ -60,13 +40,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		flex: 1,
 		marginBottom: 200,
-	},
-	errorMessage: {
-		color: "red",
-		marginHorizontal: 15,
-	},
-	link: {
-		color: "blue",
 	},
 });
 
